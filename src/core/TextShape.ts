@@ -1,4 +1,4 @@
-import { escapeXmlAttr, escapeXmlText, formatNumber, Shape, xmlIndent } from "./Shape.js";
+import { escapeXmlAttr, escapeXmlText, formatNumber, type ShapeStateSnapshot, Shape, xmlIndent } from "./Shape.js";
 
 export class TextShape extends Shape {
   private _x: number;
@@ -41,6 +41,39 @@ export class TextShape extends Shape {
       case "text": this._content = value; return;
       default: super.setAttribute(attr, value); return;
     }
+  }
+
+  override getAttribute(attr: string): string | undefined {
+    switch (attr) {
+      case "x": return formatNumber(this._x);
+      case "y": return formatNumber(this._y);
+      case "text": return this._content;
+      default: return super.getAttribute(attr);
+    }
+  }
+
+  override getGeometryValues(): number[] {
+    return [this._x, this._y];
+  }
+
+  override setGeometryValues(values: number[]): void {
+    this._x = values[0] ?? this._x;
+    this._y = values[1] ?? this._y;
+  }
+
+  override captureState(): ShapeStateSnapshot {
+    return { ...super.captureState(), content: this._content };
+  }
+
+  override restoreState(snapshot: ShapeStateSnapshot): void {
+    super.restoreState(snapshot);
+    if (snapshot.content !== undefined) {
+      this._content = snapshot.content;
+    }
+  }
+
+  override positionLabel(): string {
+    return `(${formatNumber(this._x)},${formatNumber(this._y)})`;
   }
 
   describe(): string {

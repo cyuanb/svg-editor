@@ -21,6 +21,13 @@ export function xmlIndent(level: number): string {
   return " ".repeat(level * 2);
 }
 
+/** Mutable state of a shape, used by commands to implement exact undo. */
+export interface ShapeStateSnapshot {
+  geometry: number[];
+  style: { fill?: string; stroke?: string; strokeWidth?: string };
+  content?: string;
+}
+
 /**
  * Abstract base of the shape hierarchy (Composite).
  * Geometry operations, attribute whitelist, tree/show summaries and XML
@@ -73,6 +80,43 @@ export abstract class Shape {
       return;
     }
     throw new EditorError(`unknown attribute: ${attr}`);
+  }
+
+  /** Reads a whitelisted attribute; undefined when currently unset. */
+  getAttribute(attr: string): string | undefined {
+    if (attr === "fill") return this.fill;
+    if (attr === "stroke") return this.stroke;
+    if (attr === "stroke-width") return this.strokeWidth;
+    return undefined;
+  }
+
+  /** Fixed-order geometry values, enabling snapshot/restore undo. */
+  abstract getGeometryValues(): number[];
+
+  abstract setGeometryValues(values: number[]): void;
+
+  captureState(): ShapeStateSnapshot {
+    return {
+      geometry: this.getGeometryValues(),
+      style: { fill: this.fill, stroke: this.stroke, strokeWidth: this.strokeWidth },
+    };
+  }
+
+  restoreState(snapshot: ShapeStateSnapshot): void {
+    this.setGeometryValues(snapshot.geometry);
+    this.fill = snapshot.style.fill;
+    this.stroke = snapshot.style.stroke;
+    this.strokeWidth = snapshot.style.strokeWidth;
+  }
+
+  /** Visits this shape; containers visit their whole subtree depth-first. */
+  visitSubtree(visitor: (shape: Shape) => void): void {
+    visitor(this);
+  }
+
+  /** Anchor position label like "(130,100)"; empty for containers. */
+  positionLabel(): string {
+    return "";
   }
 
   /** Compact one-line summary for `tree` (geometry + fill only). */

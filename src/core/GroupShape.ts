@@ -28,6 +28,21 @@ export class GroupShape extends Shape {
     }
   }
 
+  override getGeometryValues(): number[] {
+    return [];
+  }
+
+  override setGeometryValues(_values: number[]): void {
+    // Containers hold no own geometry; scaling is delegated to children.
+  }
+
+  override visitSubtree(visitor: (shape: Shape) => void): void {
+    visitor(this);
+    for (const child of this.children) {
+      child.visitSubtree(visitor);
+    }
+  }
+
   describe(): string {
     return this.fill !== undefined ? `fill=${this.fill}` : "";
   }

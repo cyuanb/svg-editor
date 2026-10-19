@@ -53,6 +53,31 @@ export class EllipseShape extends Shape {
     }
   }
 
+  override getAttribute(attr: string): string | undefined {
+    switch (attr) {
+      case "cx": return formatNumber(this._cx);
+      case "cy": return formatNumber(this._cy);
+      case "rx": return formatNumber(this._rx);
+      case "ry": return formatNumber(this._ry);
+      default: return super.getAttribute(attr);
+    }
+  }
+
+  override getGeometryValues(): number[] {
+    return [this._cx, this._cy, this._rx, this._ry];
+  }
+
+  override setGeometryValues(values: number[]): void {
+    this._cx = values[0] ?? this._cx;
+    this._cy = values[1] ?? this._cy;
+    this._rx = values[2] ?? this._rx;
+    this._ry = values[3] ?? this._ry;
+  }
+
+  override positionLabel(): string {
+    return `(${formatNumber(this._cx)},${formatNumber(this._cy)})`;
+  }
+
   describe(): string {
     return this.describeWithStyles(
       `cx=${formatNumber(this._cx)} cy=${formatNumber(this._cy)} rx=${formatNumber(this._rx)} ry=${formatNumber(this._ry)}`

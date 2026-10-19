@@ -53,6 +53,31 @@ export class RectShape extends Shape {
     }
   }
 
+  override getAttribute(attr: string): string | undefined {
+    switch (attr) {
+      case "x": return formatNumber(this._x);
+      case "y": return formatNumber(this._y);
+      case "width": return formatNumber(this._width);
+      case "height": return formatNumber(this._height);
+      default: return super.getAttribute(attr);
+    }
+  }
+
+  override getGeometryValues(): number[] {
+    return [this._x, this._y, this._width, this._height];
+  }
+
+  override setGeometryValues(values: number[]): void {
+    this._x = values[0] ?? this._x;
+    this._y = values[1] ?? this._y;
+    this._width = values[2] ?? this._width;
+    this._height = values[3] ?? this._height;
+  }
+
+  override positionLabel(): string {
+    return `(${formatNumber(this._x)},${formatNumber(this._y)})`;
+  }
+
   describe(): string {
     return this.describeWithStyles(
       `x=${formatNumber(this._x)} y=${formatNumber(this._y)} w=${formatNumber(this._width)} h=${formatNumber(this._height)}`

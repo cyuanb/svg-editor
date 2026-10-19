@@ -45,6 +45,29 @@ export class CircleShape extends Shape {
     }
   }
 
+  override getAttribute(attr: string): string | undefined {
+    switch (attr) {
+      case "cx": return formatNumber(this._cx);
+      case "cy": return formatNumber(this._cy);
+      case "r": return formatNumber(this._r);
+      default: return super.getAttribute(attr);
+    }
+  }
+
+  override getGeometryValues(): number[] {
+    return [this._cx, this._cy, this._r];
+  }
+
+  override setGeometryValues(values: number[]): void {
+    this._cx = values[0] ?? this._cx;
+    this._cy = values[1] ?? this._cy;
+    this._r = values[2] ?? this._r;
+  }
+
+  override positionLabel(): string {
+    return `(${formatNumber(this._cx)},${formatNumber(this._cy)})`;
+  }
+
   describe(): string {
     return this.describeWithStyles(
       `cx=${formatNumber(this._cx)} cy=${formatNumber(this._cy)} r=${formatNumber(this._r)}`

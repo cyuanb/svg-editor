@@ -68,6 +68,7 @@ describe("SvgDocument", () => {
   it("requireShape and requireContainer produce lab errors", () => {
     const doc = new SvgDocument();
     expect(() => doc.requireShape("nope")).toThrowError("no such shape: nope");
+    expect(() => doc.requireContainer("nope")).toThrowError("no such container: nope");
     doc.attach(new RectShape("r1", 0, 0, 1, 1));
     expect(() => doc.requireContainer("r1")).toThrowError("not a container: r1");
   });

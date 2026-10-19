@@ -4,7 +4,7 @@ import { CANVAS_ROOT_ID, Shape } from "./Shape.js";
 
 /**
  * Aggregate root: canvas size + logical root container + global id index.
- * attach/detach keep the id index in sync for whole subtrees (Composite).
+ * attach/detach/insert keep the id index in sync for whole subtrees.
  */
 export class SvgDocument {
   private _width: number;
@@ -39,7 +39,10 @@ export class SvgDocument {
   }
 
   requireContainer(id: string): GroupShape {
-    const shape = this.requireShape(id);
+    const shape = this.findById(id);
+    if (shape === undefined) {
+      throw new EditorError(`no such container: ${id}`);
+    }
     if (!(shape instanceof GroupShape)) {
       throw new EditorError(`not a container: ${id}`);
     }
@@ -53,6 +56,10 @@ export class SvgDocument {
   }
 
   attach(shape: Shape, parent: GroupShape = this.root): void {
+    this.insert(shape, parent, parent.children.length);
+  }
+
+  insert(shape: Shape, parent: GroupShape, index: number): void {
     if (shape === this.root) {
       throw new EditorError("cannot attach the canvas root");
     }
@@ -61,7 +68,7 @@ export class SvgDocument {
     for (const member of subtree) {
       this.shapesById.set(member.id, member);
     }
-    parent.children.push(shape);
+    parent.children.splice(index, 0, shape);
     shape.parent = parent;
   }
 

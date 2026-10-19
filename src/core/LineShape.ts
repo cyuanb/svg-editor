@@ -55,6 +55,31 @@ export class LineShape extends Shape {
     }
   }
 
+  override getAttribute(attr: string): string | undefined {
+    switch (attr) {
+      case "x1": return formatNumber(this._x1);
+      case "y1": return formatNumber(this._y1);
+      case "x2": return formatNumber(this._x2);
+      case "y2": return formatNumber(this._y2);
+      default: return super.getAttribute(attr);
+    }
+  }
+
+  override getGeometryValues(): number[] {
+    return [this._x1, this._y1, this._x2, this._y2];
+  }
+
+  override setGeometryValues(values: number[]): void {
+    this._x1 = values[0] ?? this._x1;
+    this._y1 = values[1] ?? this._y1;
+    this._x2 = values[2] ?? this._x2;
+    this._y2 = values[3] ?? this._y2;
+  }
+
+  override positionLabel(): string {
+    return `(${formatNumber(this._x1)},${formatNumber(this._y1)})`;
+  }
+
   describe(): string {
     return this.describeWithStyles(
       `(${formatNumber(this._x1)},${formatNumber(this._y1)}) -> (${formatNumber(this._x2)},${formatNumber(this._y2)})`
