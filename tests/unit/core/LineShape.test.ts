@@ -27,6 +27,10 @@ describe("LineShape", () => {
     );
   });
 
+  it("escapes XML special characters in attribute values", () => {
+    const line = new LineShape("e", 0, 0, 1, 1, '<"&>');
+    expect(line.toXml(0)).toBe('<line id="e" x1="0" y1="0" x2="1" y2="1" stroke="&lt;&quot;&amp;&gt;"/>');
+  });
   it("sets stroke-width with numeric validation", () => {
     const line = new LineShape("e", 0, 0, 1, 1);
     line.setAttribute("stroke-width", "2.5");

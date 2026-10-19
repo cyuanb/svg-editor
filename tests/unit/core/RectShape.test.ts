@@ -43,6 +43,8 @@ describe("RectShape", () => {
     expect(rect.canSet("cx")).toBe(false);
     expect(() => rect.setAttribute("cx", "1")).toThrowError(/unknown attribute: cx/);
     expect(() => rect.setAttribute("x", "abc")).toThrowError(/invalid number/);
+    expect(() => rect.setAttribute("x", "")).toThrowError(/invalid number for x: /);
+    expect(() => rect.setAttribute("x", "0x10")).toThrowError(/invalid number for x: 0x10/);
   });
 
   it("serializes to xml and omits absent fill", () => {

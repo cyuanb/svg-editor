@@ -43,6 +43,20 @@ describe("parseNumber", () => {
   it("rejects non-numeric input with the error prefix message", () => {
     expect(() => parseNumber("abc")).toThrowError("invalid number: abc");
   });
+
+  it("rejects empty, whitespace, hex and special numeric strings", () => {
+    expect(() => parseNumber("")).toThrowError("invalid number: ");
+    expect(() => parseNumber(" ")).toThrowError("invalid number:  ");
+    expect(() => parseNumber("0x10")).toThrowError("invalid number: 0x10");
+    expect(() => parseNumber("Infinity")).toThrowError("invalid number: Infinity");
+    expect(() => parseNumber("NaN")).toThrowError("invalid number: NaN");
+  });
+
+  it("accepts exponent and signed decimal forms", () => {
+    expect(parseNumber("1e3")).toBe(1000);
+    expect(parseNumber("+.5")).toBe(0.5);
+    expect(parseNumber("1.")).toBe(1);
+  });
 });
 
 describe("ParsedCommand.parse", () => {

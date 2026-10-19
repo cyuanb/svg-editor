@@ -14,7 +14,11 @@ export function escapeXmlText(value: string): string {
 }
 
 export function escapeXmlAttr(value: string): string {
-  return value.replace(/&/g, "&amp;").replace(/"/g, "&quot;");
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 }
 
 export function xmlIndent(level: number): string {
@@ -159,11 +163,13 @@ export abstract class Shape {
     return this.fill !== undefined ? `${geometry} fill=${this.fill}` : geometry;
   }
 
+  /** Strict decimal guard, kept in sync with parsing/Tokenizer.parseNumber. */
+  private static readonly NUMBER_PATTERN = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/;
+
   protected parseNumber(attr: string, raw: string): number {
-    const value = Number(raw);
-    if (!Number.isFinite(value)) {
+    if (!Shape.NUMBER_PATTERN.test(raw)) {
       throw new EditorError(`invalid number for ${attr}: ${raw}`);
     }
-    return value;
+    return Number(raw);
   }
 }

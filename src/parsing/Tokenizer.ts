@@ -1,5 +1,8 @@
 import { EditorError } from "../errors/EditorError.js";
 
+/** Strict decimal number: sign, digits, optional fraction and exponent. */
+const NUMBER_PATTERN = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/;
+
 /**
  * Quote-aware tokenizer: whitespace splits tokens, double-quoted sections
  * (which may contain spaces) become a single token with quotes stripped.
@@ -35,11 +38,13 @@ export function tokenize(line: string): string[] {
   return tokens;
 }
 
-/** Parses a CLI numeric argument (integers and floats are both legal). */
+/**
+ * Parses a CLI numeric argument: integers and decimal floats are legal.
+ * Empty strings, hex, Infinity and NaN are rejected.
+ */
 export function parseNumber(raw: string): number {
-  const value = Number(raw);
-  if (!Number.isFinite(value)) {
+  if (!NUMBER_PATTERN.test(raw)) {
     throw new EditorError(`invalid number: ${raw}`);
   }
-  return value;
+  return Number(raw);
 }
