@@ -28,6 +28,17 @@ export class GroupShape extends Shape {
     }
   }
 
+  override isAncestorOf(shape: Shape): boolean {
+    let current = shape.parent;
+    while (current !== null) {
+      if (current === this) {
+        return true;
+      }
+      current = current.parent;
+    }
+    return false;
+  }
+
   override getGeometryValues(): number[] {
     return [];
   }

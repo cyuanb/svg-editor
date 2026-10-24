@@ -113,6 +113,11 @@ export abstract class Shape {
     this.strokeWidth = snapshot.style.strokeWidth;
   }
 
+  /** True when this shape is a container ancestor of the given shape. */
+  isAncestorOf(shape: Shape): boolean {
+    return false;
+  }
+
   /** Visits this shape; containers visit their whole subtree depth-first. */
   visitSubtree(visitor: (shape: Shape) => void): void {
     visitor(this);
