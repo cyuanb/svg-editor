@@ -1,12 +1,14 @@
 import { pathToFileURL } from "node:url";
+import { CommandDispatcher } from "../cli/CommandDispatcher.js";
+import { Repl } from "../cli/Repl.js";
 
-export const BANNER = "svg-editor 0.1 — type 'help' for commands";
-
-export function start(): void {
-  console.log(BANNER);
+export async function start(): Promise<void> {
+  const dispatcher = new CommandDispatcher();
+  const repl = new Repl(dispatcher);
+  await repl.start();
 }
 
 const entryPath = process.argv[1];
 if (entryPath !== undefined && import.meta.url === pathToFileURL(entryPath).href) {
-  start();
+  void start();
 }
