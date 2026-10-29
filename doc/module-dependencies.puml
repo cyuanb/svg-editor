@@ -1,0 +1,44 @@
+@startuml
+skinparam componentStyle rectangle
+
+package "svg-editor" {
+  [app] as App
+  [cli] as Cli
+  [history] as History
+  [commands] as Commands
+  [factory] as Factory
+  [io] as IO
+  [parsing] as Parsing
+  [core] as Core
+  [errors] as Errors
+
+  App --> Cli
+  Cli --> Commands
+  Cli --> History
+  Cli --> Factory
+  Cli --> IO
+  Cli --> Parsing
+  Cli --> Core
+  Cli --> Errors
+
+  History --> Commands
+  History --> Core
+  History --> Errors
+
+  Commands --> Core
+  Commands --> Errors
+  Commands --> Factory
+  Commands --> Parsing
+
+  Factory --> Core
+  Factory --> Errors
+  Factory --> Parsing
+
+  IO --> Core
+  IO --> Errors
+  IO --> Parsing
+
+  Parsing --> Errors
+  Core --> Errors
+}
+@enduml

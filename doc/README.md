@@ -68,7 +68,7 @@ svg-editor/
 
 1. `src/app` 是程序的启动模块。它负责创建各个模块的实例、完成依赖组装并启动命令行界面，不处理具体的编辑逻辑。
 
-2. `src/cli` 是命令行交互模块。它负责读取用户输入、识别命令并调用对应的处理逻辑，同时把执行结果输出到终端，`tree` 的树形排版也在这里完成。
+2. `src/cli` 是命令行交互模块。它负责读取用户输入、识别命令并调用对应的处理逻辑，同时把执行结果输出到终端
 
 3. `src/commands` 是编辑命令模块。每个命令封装成独立的类，保存执行所需的数据，并通过 `execute` 和 `undo` 完成执行与撤销。
 
@@ -86,34 +86,12 @@ svg-editor/
 
 下面是模块依赖图。箭头表示依赖方向。
 
-```mermaid
-flowchart TD
-    App[app] --> Cli[cli]
-    Cli --> Commands[commands]
-    Cli --> History[history]
-    Cli --> Factory[factory]
-    Cli --> IO[io]
-    Cli --> Parsing[parsing]
-    Cli --> Core[core]
-    Cli --> Errors[errors]
-    History --> Commands
-    History --> Core
-    History --> Errors
-    Commands --> Core
-    Commands --> Errors
-    Commands --> Factory
-    Commands --> Parsing
-    Factory --> Core
-    Factory --> Errors
-    Factory --> Parsing
-    IO --> Core
-    IO --> Errors
-    IO --> Parsing
-    Parsing --> Errors
-    Core --> Errors
-```
+![模块依赖图](module-dependencies.svg)
 
-对应的 PlantUML 组件图源文件如下。
+对应的 PlantUML 源文件如下。
+
+<details>
+<summary>展开查看 PlantUML 源文件</summary>
 
 ```plantuml
 @startuml
@@ -162,9 +140,10 @@ package "svg-editor" {
 @enduml
 ```
 
+</details>
 ### 1.2 设计模式的选择
 
-我认为这个项目应当采用 Command 模式。这个项目的核心操作是编辑图形，而编辑命令需要支持撤销和重做，并且一条命令必须作为一个完整的撤销单元。Command 模式把每个操作封装成独立对象，正好满足这个要求。
+本项目采用的是Command模式，这个项目的核心操作是编辑图形，而编辑命令需要支持撤销和重做，并且一条命令必须作为一个完整的撤销单元。Command 模式把每个操作封装成独立对象，正好。
 
 代码中的落地方式分为四个部分。第一，`EditCommand` 是抽象基类，定义 `execute` 和 `undo` 两个方法。`execute` 修改文档并返回成功提示，`undo` 恢复执行前的状态并返回撤销提示。第二，十个编辑命令分别继承 `EditCommand`，包括创建、删除、移动、缩放、设置属性、分组、解散分组、加入容器、置顶和置底。每个命令类保存执行时需要的参数，例如移动命令保存 id、dx 和 dy，设置命令保存 id、属性名和新值。第三，`HistoryManager` 只依赖 `EditCommand` 抽象类，不依赖任何具体命令。它把执行成功的命令压入撤销栈，把撤销的命令压入重做栈。第四，重做不单独实现，而是再次调用命令的 `execute`，因为撤销已经把文档恢复到执行前的状态，命令参数也仍然保存在命令对象中。
 
@@ -252,6 +231,7 @@ package "svg-editor" {
 - **提交过程。** 我按模块拆分提交，每次提交前都执行类型检查和测试，确保每个提交都能独立编译并通过测试。提交历史可以反映从项目骨架到完整实现的开发过程。
 
 总的来说，自动化测试覆盖了主要功能和边界情况，手动验证确认了终端输出和 SVG 渲染效果，类型检查和依赖检查保证了代码结构和接口的稳定性。目前我没有发现已知的功能缺口。
+
 
 
 
